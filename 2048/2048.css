@@ -13,7 +13,7 @@ body {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   display: flex;
-  flex-direction: row
+  flex-direction: row;
   justify-content: center;
   align-items: center;
 }
@@ -56,8 +56,7 @@ body {
   color: #3d783d;
 }
 
-.score-container
-{
+.score-container {
   position: relative;
 }
 
@@ -102,6 +101,7 @@ body {
   /* Add hover style */
   transition: background-color 0.2s;
 }
+
 .new-game:hover {
   background-color: #cec1b7;
 }
@@ -112,41 +112,41 @@ body {
 }
 
 .leaderboard {
-background-color: #bdecb6;
-border-radius: 5px;
-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-width: 200px;
-height: 300px;
+  background-color: #bdecb6;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 300px;
   text-align: center;
 
 }
 
 .leaderboard-title {
   padding: 10px 0px;
-font-size: 24px;
-font-weight: bold;
-color: #3b6323;
-margin-bottom: 10px;
-text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #3b6323;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .leaderboard-list {
-list-style-type: none;
-margin: 0;
-padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 .leaderboard-item {
-font-size: 18px;
-font-weight: bold;
-color: #3b6323;
-margin-bottom: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #3b6323;
+  margin-bottom: 5px;
 }
 
 .leaderboard-item span {
-font-weight: normal;
-color: #5f9350;
-margin-left: 5px;
+  font-weight: normal;
+  color: #5f9350;
+  margin-left: 5px;
 }
 
 .sidepane {
