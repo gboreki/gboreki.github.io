@@ -365,6 +365,52 @@
       }
     }
 
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    document.addEventListener("touchstart", function (event) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    });
+
+    document.addEventListener("touchend", function (event) {
+      touchEndX = event.changedTouches[0].clientX;
+      touchEndY = event.changedTouches[0].clientY;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const dx = touchEndX - touchStartX;
+      const dy = touchEndY - touchStartY;
+      const threshold = 50; // minimum distance required for a swipe
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        // horizontal swipe
+        if (Math.abs(dx) > threshold) {
+          if (dx > 0) {
+            // swipe right
+            moveTilesRight();
+          } else {
+            // swipe left
+            moveTilesLeft();
+          }
+        }
+      } else {
+        // vertical swipe
+        if (Math.abs(dy) > threshold) {
+          if (dy > 0) {
+            // swipe down
+            moveTilesDown();
+          } else {
+            // swipe up
+            moveTilesUp();
+          }
+        }
+      }
+    }
+
 
     // Wait for the DOM to load before starting the game
     document.addEventListener('DOMContentLoaded', () => {
