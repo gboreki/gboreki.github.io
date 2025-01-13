@@ -183,10 +183,16 @@ class Game {
         const gameBoard = document.querySelector('.game-board');
         let touchStartX = null;
         let touchStartY = null;
+        let touchStartTime = null;
+        const SWIPE_THRESHOLD = 30;
+        const TAP_THRESHOLD = 200; // milliseconds
+        let lastTapTime = 0;
 
         gameBoard.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+            e.preventDefault();
         });
 
         gameBoard.addEventListener('touchmove', (e) => {
@@ -196,40 +202,77 @@ class Game {
             const touchY = e.touches[0].clientY;
             const deltaX = touchX - touchStartX;
             const deltaY = touchY - touchStartY;
+            const deltaTime = Date.now() - touchStartTime;
 
-            // Require minimum movement to trigger
-            if (Math.abs(deltaX) > 30) {
-                if (deltaX > 0) {
-                    this.handleInput('ArrowRight');
-                } else {
-                    this.handleInput('ArrowLeft');
+            // If it's a quick swipe (less than 300ms), use smaller threshold
+            const threshold = deltaTime < 300 ? SWIPE_THRESHOLD / 2 : SWIPE_THRESHOLD;
+
+            // Determine the dominant direction of the swipe
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Horizontal swipe
+                if (Math.abs(deltaX) > threshold) {
+                    if (deltaX > 0) {
+                        this.handleInput('ArrowRight');
+                    } else {
+                        this.handleInput('ArrowLeft');
+                    }
+                    touchStartX = touchX;
                 }
-                touchStartX = touchX;
-            }
-
-            if (deltaY > 30) {
-                this.handleInput('ArrowDown');
-                touchStartY = touchY;
+            } else {
+                // Vertical swipe
+                if (Math.abs(deltaY) > threshold) {
+                    if (deltaY > 0) {
+                        this.handleInput('ArrowDown');
+                    } else {
+                        // Swipe up for rotation
+                        this.handleInput('ArrowUp');
+                    }
+                    touchStartY = touchY;
+                }
             }
 
             e.preventDefault();
         });
 
-        gameBoard.addEventListener('touchend', () => {
+        gameBoard.addEventListener('touchend', (e) => {
+            const deltaTime = Date.now() - touchStartTime;
+            const currentTime = Date.now();
+
+            // Handle taps for rotation
+            if (deltaTime < TAP_THRESHOLD) {
+                if (currentTime - lastTapTime < 300) {
+                    // Double tap detected
+                    this.handleInput('ArrowUp');
+                    lastTapTime = 0; // Reset to prevent triple-tap
+                } else {
+                    lastTapTime = currentTime;
+                }
+            }
+
             touchStartX = null;
             touchStartY = null;
+            touchStartTime = null;
+            e.preventDefault();
         });
 
-        // Double tap for rotation
-        let lastTap = 0;
+        // Prevent default touch behaviors
+        gameBoard.addEventListener('touchcancel', (e) => {
+            touchStartX = null;
+            touchStartY = null;
+            touchStartTime = null;
+            e.preventDefault();
+        });
+
+        // Hard drop on double tap
+        let lastDoubleTapTime = 0;
         gameBoard.addEventListener('touchstart', (e) => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            if (tapLength < 300 && tapLength > 0) {
-                this.handleInput('ArrowUp');
+            const currentTime = Date.now();
+            if (currentTime - lastDoubleTapTime < 300) {
+                // Triple tap detected - hard drop
+                this.handleInput(' '); // Space for hard drop
                 e.preventDefault();
             }
-            lastTap = currentTime;
+            lastDoubleTapTime = currentTime;
         });
     }
 
