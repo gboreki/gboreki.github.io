@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columns Game</title>
+    <style>
+        :root {
+            --cell-size: 30px;
+            --grid-gap: 1px;
+            --board-bg: #1a1a1a;
+            --cell-bg: #2a2a2a;
+            --border-color: #3a3a3a;
+            --ui-bg: #f0f0f0;
+            --text-color: #333;
+            --accent-color: #4CAF50;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            font-family: 'Arial', sans-serif;
+            color: var(--text-color);
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(10, var(--cell-size));
+            grid-template-rows: repeat(20, var(--cell-size));
+            gap: var(--grid-gap);
+            background-color: var(--board-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: var(--grid-gap);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background-color: var(--cell-bg);
+            border-radius: 2px;
+            transition: background-color 0.15s ease;
+        }
+
+        .cell.ghost {
+            background-color: var(--ghost-color);
+            opacity: 0.3;
+        }
+
+        .cell.match {
+            animation: match-flash 0.5s ease-out;
+        }
+
+        @keyframes match-flash {
+            0%, 50% {
+                transform: scale(0.9);
+                filter: brightness(1.5);
+            }
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+        }
+        
+        .game-info {
+            padding: 20px;
+            background-color: var(--ui-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+        }
+
+        .game-info h2, .game-info h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-color);
+        }
+
+        .score-container {
+            background: var(--board-bg);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .level-indicator {
+            background: var(--board-bg);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .preview-area {
+            width: var(--cell-size);
+            height: calc(var(--cell-size) * 3);
+            display: grid;
+            grid-template-rows: repeat(3, var(--cell-size));
+            gap: var(--grid-gap);
+            background-color: var(--board-bg);
+            margin: 10px 0;
+            padding: var(--grid-gap);
+            border-radius: 4px;
+        }
+        
+        .preview-cell {
+            background-color: var(--cell-bg);
+            border-radius: 2px;
+            transition: background-color 0.15s ease;
+        }
+
+        .overlay {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .overlay.active {
+            display: block;
+            animation: overlay-fade-in 0.3s ease-out;
+        }
+
+        @keyframes overlay-fade-in {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .overlay button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .overlay button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .overlay button:active {
+            transform: translateY(0);
+        }
+
+        .controls-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .controls-info ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .controls-info li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-board">
+            <!-- Game cells will be generated by JavaScript -->
+        </div>
+        <div class="game-info">
+            <div class="score-container">
+                <h2>Score</h2>
+                <div id="score">0</div>
+            </div>
+            <div class="level-indicator">
+                <h3>Level</h3>
+                <div id="level">1</div>
+            </div>
+            <h3>Next Piece:</h3>
+            <div class="preview-area">
+                <div class="preview-cell"></div>
+                <div class="preview-cell"></div>
+                <div class="preview-cell"></div>
+            </div>
+            <div class="controls-info">
+                <ul>
+                    <li>← → : Move</li>
+                    <li>↑ : Rotate</li>
+                    <li>↓ : Soft Drop</li>
+                    <li>Space : Hard Drop</li>
+                    <li>ESC : Pause</li>
+                </ul>
+            </div>
+        </div>
+        <div id="overlay" class="overlay">
+            <h2 id="overlay-message">Game Paused</h2>
+            <button id="overlay-button">Resume</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
