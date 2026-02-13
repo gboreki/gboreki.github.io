@@ -12,4 +12,4 @@
 
 # Nala's Dream Replit Game
 
-[Nala's Dream](Nalas-Dream\index.html)
+[Nala's Dream](nalas-dream\index.html)
